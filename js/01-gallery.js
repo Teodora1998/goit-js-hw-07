@@ -1,54 +1,47 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-const galleryList = document.querySelector(".gallery");
-const modal = document.querySelector(".modal");
-const modalImage = document.querySelector(".modal__image");
+const gallery = document.querySelector(".gallery");
 
-function createGalleryItem(item) {
-  const galleryItem = document.createElement("li");
-  galleryItem.classList.add("gallery__item");
+for (let i = 0; i < galleryItems.length; i++) {
+  const element = galleryItems[i];
+  const index = i;
 
-  const galleryLink = document.createElement("a");
-  galleryLink.classList.add("gallery__link");
-  galleryLink.href = item.original;
+  const { preview, original, description } = element;
+  const item = document.createElement("li");
+  const link = document.createElement("a");
+  const image = document.createElement("img");
 
-  const galleryImage = document.createElement("img");
-  galleryImage.classList.add("gallery__image");
-  galleryImage.src = item.preview;
-  galleryImage.setAttribute("data-source", item.original);
-  galleryImage.alt = item.description;
+  image.src = preview;
+  image.alt = description;
+  link.href = original;
 
-  galleryLink.appendChild(galleryImage);
-  galleryItem.appendChild(galleryLink);
+  image.classList.add("gallery__image");
+  image.setAttribute("id", `${index}`);
+  link.classList.add("gallery__link");
 
-  return galleryItem;
+  link.appendChild(image);
+  item.appendChild(image);
+
+  gallery.appendChild(item);
 }
 
-function openModal(event) {
-  event.preventDefault();
-  const imageSrc = event.target.getAttribute("data-source");
-  modalImage.src = imageSrc;
-  modal.classList.add("is-open");
-}
+const galleryLink = document.querySelectorAll(".gallery__link");
+galleryLink.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+  });
+});
 
-function closeModal(event) {
-  if (event.key === "Escape") {
-    modal.classList.remove("is-open");
-    modalImage.src = "";
-  }
-}
+gallery.addEventListener("click", (event) => {
+  const clickedImage = event.target;
 
-function renderGallery() {
-  const galleryItemsHTML = galleryItems.map((item) => createGalleryItem(item));
-  galleryList.append(...galleryItemsHTML);
+  const id = clickedImage.id;
+  const url = galleryItems[id].original;
+  const descr = galleryItems[id].description;
 
-  const galleryLinks = document.querySelectorAll(".gallery__link");
-  galleryLinks.forEach((link) => link.addEventListener("click", openModal));
+  console.log(url);
+  const instance = basicLightbox.create(`<img src="${url} alt = ${descr}>`);
 
-  document.addEventListener("keydown", closeModal);
-}
-
-renderGallery();
-
-console.log(galleryItems);
+  instance.show();
+});
